@@ -1,0 +1,45 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nsx-node-agent-restarter
+  namespace: cronjob-nsx-system
+spec:
+  concurrencyPolicy: Allow
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+      creationTimestamp: null
+    spec:
+      template:
+        metadata:
+          creationTimestamp: null
+        spec:
+          containers:
+          - command:
+            - /bin/bash
+            - -c
+            - 'sh /opt/restart-nsx-node-agent.sh '
+            image: registry.redhat.io/openshift4/ose-cli
+            imagePullPolicy: Always
+            name: container
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
+            - mountPath: /opt/
+              name: restart-nsx-node-agent-script
+          dnsPolicy: ClusterFirst
+          restartPolicy: Never
+          schedulerName: default-scheduler
+          securityContext: {}
+          serviceAccount: nsx-node-agent-killer
+          serviceAccountName: nsx-node-agent-killer
+          terminationGracePeriodSeconds: 30
+          volumes:
+          - configMap:
+              defaultMode: 420
+              name: restart-nsx-node-agent-script
+            name: restart-nsx-node-agent-script
+  schedule: '0 0 * * * '
+  successfulJobsHistoryLimit: 3
+  suspend: false

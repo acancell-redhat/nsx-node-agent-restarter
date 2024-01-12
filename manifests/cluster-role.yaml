@@ -1,0 +1,10 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: nsx-node-agent-killer-cr 
+rules:
+- apiGroups: [""]
+  resources:
+     - "pods"
+     - "pods/log"
+  verbs: ["get", "list", "create", "delete", "watch"]

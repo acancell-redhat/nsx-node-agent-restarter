@@ -1,0 +1,14 @@
+apiVersion: v1
+data:
+  restart-nsx-node-agent.sh: "#!/bin/bash\nif ! [ $(oc get pods -n nsx-system --field-selector
+    status.phase==Running | grep -v -P '(\\d+)\\/\\1' | grep nsx-node-agent)]; then\n\tlast_line=$(oc
+    get pod  -o name  -n nsx-system| grep nsx-node-agent | wc -l )\n\tcurrent_line=0\n\toc
+    get pod  -o name  -n nsx-system| grep nsx-node-agent |\n\twhile read -r line\n\tdo
+    \n\t\toc delete $line -n nsx-system;\n\t\tcurrent_line=$(($current_line + 1))\n\t\tif
+    [[ $current_line -ne $last_line ]]; then\n\t\t\techo \"The next pod will be restarted
+    at\" $(date -d \"now +15min\");\n\t\t\tsleep 900;\n\t        fi\n\tdone \nelse\n\texit
+    1\nfi\n"
+kind: ConfigMap
+metadata:
+  name: restart-nsx-node-agent-script
+  namespace: cronjob-nsx-system
