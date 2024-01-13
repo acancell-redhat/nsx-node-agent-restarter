@@ -1,41 +1,45 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: nsx-node-agent-restarter-cj
-  namespace: nsx-system-restarter
+  name: nsx-node-agent-restarter
+  namespace: cronjob-nsx-system
 spec:
-  concurrencyPolicy: Forbid
-  failedJobsHistoryLimit: 5
-  successfulJobsHistoryLimit: 5
-  timeZone: 'Etc/UTC'    # TODO Verify that cluster supports this
-  schedule: '0 0 * * * ' # TODO Update this
-  suspend: true          # TODO Set to false
+  concurrencyPolicy: Allow
+  failedJobsHistoryLimit: 1
   jobTemplate:
     metadata:
+      creationTimestamp: null
     spec:
-      parallelism: 1
-      completions: 1
-      backoffLimit: 5
-      activeDeadlineSeconds: 13200 # NOTE 11 nodes * 20min per node * 60s
       template:
         metadata:
+          creationTimestamp: null
         spec:
           containers:
           - command:
-            - /opt/restart-nsx-node-agents.sh
+            - /bin/bash
+            - -c
+            - 'sh /opt/restart-nsx-node-agent.sh '
             image: registry.redhat.io/openshift4/ose-cli
             imagePullPolicy: Always
-            name: restart-nsx-node-agents
-            terminationMessagePolicy: FallbackToLogsOnError
+            name: container
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
             volumeMounts:
             - mountPath: /opt/
-              name: nsx-node-agent-restarter-script
+              name: restart-nsx-node-agent-script
+          dnsPolicy: ClusterFirst
           restartPolicy: Never
-          serviceAccount: nsx-node-agent-restarter-sa
-          serviceAccountName: nsx-node-agent-restarter-sa
+          schedulerName: default-scheduler
+          securityContext: {}
+          serviceAccount: nsx-node-agent-killer
+          serviceAccountName: nsx-node-agent-killer
           terminationGracePeriodSeconds: 30
           volumes:
           - configMap:
-              defaultMode: 0554
-              name: nsx-node-agent-restarter-script
-            name: nsx-node-agent-restarter-script
+              defaultMode: 420
+              name: restart-nsx-node-agent-script
+            name: restart-nsx-node-agent-script
+  schedule: '0 0 * * * '
+  successfulJobsHistoryLimit: 3
+  suspend: false
