@@ -1,0 +1,41 @@
+# nsx-node-agent DaemonSet simulacrum for tests 
+# For original nsx-node-agent DaemonSet, see: https://github.com/salv-orlando/nsx-container-plugin-operator/blob/da80ae467d55dcf9715e2c8955f69ad10690675a/manifest/openshift4/coreos/ncp-openshift4.yaml#L848
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nsx-node-agent
+  namespace: nsx-system
+  labels:
+    tier: nsx-networking
+    component: nsx-node-agent
+    version: v1
+spec:
+  selector:
+    matchLabels:
+      tier: nsx-networking
+      component: nsx-node-agent
+      version: v1
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        tier: nsx-networking
+        component: nsx-node-agent
+        version: v1
+    spec:
+      terminationGracePeriodSeconds: 60
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
+        - key: node.kubernetes.io/not-ready
+          effect: NoSchedule
+        - key: node.kubernetes.io/unreachable
+          effect: NoSchedule
+      containers:
+        - name: nsx-node-agent
+          image: image-registry.openshift-image-registry.svc:5000/openshift/httpd:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 8080
+            protocol: TCP

@@ -1,7 +1,7 @@
 apiVersion: project.openshift.io/v1
 kind: Project
 metadata:
-  name: cronjob-nsx-system
+  name: nsx-system-restarter
 spec:
   finalizers:
   - kubernetes
