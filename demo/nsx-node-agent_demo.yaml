@@ -1,3 +1,13 @@
+---
+# nsx-system Project simulacrum for tests 
+apiVersion: project.openshift.io/v1
+kind: Project
+metadata:
+  name: nsx-system
+spec:
+  finalizers:
+  - kubernetes
+---
 # nsx-node-agent DaemonSet simulacrum for tests 
 # For original nsx-node-agent DaemonSet, see: https://github.com/salv-orlando/nsx-container-plugin-operator/blob/da80ae467d55dcf9715e2c8955f69ad10690675a/manifest/openshift4/coreos/ncp-openshift4.yaml#L848
 apiVersion: apps/v1

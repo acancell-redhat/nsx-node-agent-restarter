@@ -7,9 +7,9 @@ spec:
   concurrencyPolicy: Forbid
   failedJobsHistoryLimit: 5
   successfulJobsHistoryLimit: 5
-  timeZone: 'Etc/UTC'    # TODO Verify that cluster supports this
-  schedule: '0 0 * * * ' # TODO Update this
-  suspend: true          # TODO Set to false
+  #timeZone: 'Etc/UTC'    # NOTE Only available from K8s v1.27
+  schedule: '0 0 * * *'
+  suspend: false
   jobTemplate:
     metadata:
     spec:
@@ -27,6 +27,9 @@ spec:
             imagePullPolicy: Always
             name: restart-nsx-node-agents
             terminationMessagePolicy: FallbackToLogsOnError
+            envFrom:
+            - configMapRef:
+                name: nsx-node-agent-restarter-env
             volumeMounts:
             - mountPath: /opt/
               name: nsx-node-agent-restarter-script
