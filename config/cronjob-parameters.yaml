@@ -1,0 +1,9 @@
+- op: replace
+  path: /spec/schedule
+  value: '0 0 * * *'
+- op: replace
+  path: /spec/suspend
+  value: false
+- op: replace
+  path: /spec/jobTemplate/spec/activeDeadlineSeconds
+  value: 13200 # NOTE 11 nodes * 20min per node * 60s
