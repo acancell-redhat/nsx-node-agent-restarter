@@ -1,7 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: nsx-node-agent-killer-cr 
+  name: nsx-node-agent-restarter-cr 
 rules:
 - apiGroups: [""]
   resources:
