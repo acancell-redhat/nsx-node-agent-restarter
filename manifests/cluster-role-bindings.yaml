@@ -1,15 +1,15 @@
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: nsx-node-agent-killer-crb
+  name: nsx-node-agent-restarter-crb
 subjects:
   - kind: ServiceAccount
-    name: nsx-node-agent-killer
-    namespace: cronjob-nsx-system
+    name: nsx-node-agent-restarter-sa
+    namespace: nsx-node-agent-restarter
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: nsx-node-agent-killer-cr
+  name: nsx-node-agent-restarter-cr
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -21,5 +21,5 @@ roleRef:
   name: system:openshift:scc:privileged
 subjects:
 - kind: ServiceAccount
-  name: nsx-node-agent-killer
-  namespace: cronjob-nsx-system
+  name: nsx-node-agent-restarter-sa
+  namespace: nsx-node-agent-restarter
