@@ -43,22 +43,34 @@ for nsx_node_agent_pod in "${nsx_node_agent_pods_all[@]}"; do
   oc delete ${nsx_node_agent_pod} -n nsx-system
   oc wait -n nsx-system --for=delete ${nsx_node_agent_pod} --timeout=$(( ${WAIT_DELETE_MINUTES} * 60 ))s
   
-  echo "INFO Waiting for creation of new Pod on node ${node_of_pod} and for such Pod to be in state ContainersReady ..."
+  # NOTE Workaround for https://github.com/kubernetes/kubectl/issues/1516
+  echo "INFO Waiting for creation of new Pod on node ${node_of_pod} ..."
+  sleep 60 
+  nsx_node_agent_pod_new=$(oc get pod --no-headers -o name -n nsx-system -l component==nsx-node-agent --field-selector spec.nodeName=${node_of_pod}) 
+  if [[ -n ${nsx_node_agent_pod_new} ]]; then
+    echo "INFO New Pod ${nsx_node_agent_pod_new} has been created"
+  else
+    echo "ERROR Pod ${nsx_node_agent_pod_new} failed to be created"
+    echo "ERROR Aborting and exiting"
+ 	  exit 1
+  fi
+
+  echo "INFO Waiting for Pod ${nsx_node_agent_pod_new} to be in state ContainersReady ..."
   oc wait pod -n nsx-system -l component==nsx-node-agent --field-selector spec.nodeName=${node_of_pod} --for=condition=ContainersReady --timeout=$(( ${WAIT_CREATE_MINUTES} * 60 ))s
   nsx_node_agent_pod_new=$(oc get pod --no-headers -n nsx-system -l component==nsx-node-agent --field-selector status.phase==Running,spec.nodeName=${node_of_pod} | grep -P '(\d+)\/\1[^\d]' | awk '{print "pod/"$1}')
-  echo "INFO The new Pod is: ${nsx_node_agent_pod_new}"
   if [[ -n ${nsx_node_agent_pod_new} ]]; then
     echo "INFO Pod ${nsx_node_agent_pod_new} and its containers are running"
   else
     echo "ERROR Pod ${nsx_node_agent_pod_new} or its containers failed to run"
 	  echo "ERROR Current status of Pod ${nsx_node_agent_pod_new}:"
 	  oc get --no-headers -n nsx-system ${nsx_node_agent_pod_new}
+    echo "ERROR Aborting and exiting"
  	  exit 1
   fi
 
   # NOTE (( pods_restarted_n++ )) can't be used because of issue https://stackoverflow.com/questions/6877012/incrementing-a-variable-triggers-exit-in-bash-4-but-not-in-bash-3
   pods_restarted_n="$((pods_restarted_n+1))"
-  echo $pods_restarted_n
+  echo "INFO Count of Pods restarted so far: ${pods_restarted_n}"
   if [[ ${pods_restarted_n} -ne ${nsx_node_agent_pods_all_n} ]]; then
     echo "INFO Waiting ${DELAY_RESTART_MINUTES} minutes (\"DELAY_RESTART_MINUTES\") before restarting next Pod ..."
 	echo "INFO Next Pod will be restarted at:" $(date -u -d "now +${DELAY_RESTART_MINUTES}min")
