@@ -24,6 +24,13 @@ printf '  %s\n' "${nsx_node_agent_pods_running[@]}"
 nsx_node_agent_pods_running_n=${#nsx_node_agent_pods_running[@]}
 echo "INFO nsx_node_agent Pods running count: ${nsx_node_agent_pods_running_n}"
 
+# Abort if count of FULLY RUNNING (= all containers ok) nsx_node_agent pods < count of ALL nsx_node_agent pods. This prevents killing any nsx_node_agent if initially there are already problems
+if [[ ${nsx_node_agent_pods_running_n} -lt $nsx_node_agent_pods_all_n ]]; then
+    echo "ERROR Number of fully running NSX NODE AGENT pods is ${nsx_node_agent_pods_running_n} which is less than the expected $nsx_node_agent_pods_all_n"
+    echo "ERROR Aborting and exiting"
+ 	  exit 1
+fi
+
 # The following should come from env variables. If not, it uses their default values.
 echo "INFO Value of WAIT_DELETE_MINUTES: ${WAIT_DELETE_MINUTES:=1}"
 echo "INFO Value of WAIT_CREATE_MINUTES: ${WAIT_CREATE_MINUTES:=2}"
