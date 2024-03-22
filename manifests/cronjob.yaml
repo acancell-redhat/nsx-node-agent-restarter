@@ -1,8 +1,8 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: nsx-node-agent-restarter-cj
-  namespace: nsx-system-restarter
+  name: nodes-purge-cj
+  namespace: nsx-system-purger
 spec:
   concurrencyPolicy: Forbid
   failedJobsHistoryLimit: 5
@@ -22,23 +22,23 @@ spec:
         spec:
           containers:
           - command:
-            - /opt/restart-nsx-node-agents.sh
+            - /opt/nodes-purge.sh
             image: registry.redhat.io/openshift4/ose-cli
             imagePullPolicy: Always
-            name: restart-nsx-node-agents
+            name: nodes-purge
             terminationMessagePolicy: FallbackToLogsOnError
             envFrom:
             - configMapRef:
-                name: nsx-node-agent-restarter-env
+                name: nodes-purge-env
             volumeMounts:
             - mountPath: /opt/
-              name: nsx-node-agent-restarter-script
+              name: nodes-purge-script
           restartPolicy: Never
-          serviceAccount: nsx-node-agent-restarter-sa
-          serviceAccountName: nsx-node-agent-restarter-sa
+          serviceAccount: nodes-purge-sa
+          serviceAccountName: nodes-purge-sa
           terminationGracePeriodSeconds: 30
           volumes:
           - configMap:
               defaultMode: 0554
-              name: nsx-node-agent-restarter-script
-            name: nsx-node-agent-restarter-script
+              name: nodes-purge-script
+            name: nodes-purge-script

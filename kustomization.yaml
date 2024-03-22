@@ -3,14 +3,14 @@ kind: Kustomization
 resources:
 - manifests
 configMapGenerator:
-- name: nsx-node-agent-restarter-script
-  namespace: nsx-system-restarter
+- name: nodes-purge-script
+  namespace: nsx-system-purger
   files:
-  - restart-nsx-node-agents.sh
-- name: nsx-node-agent-restarter-env
-  namespace: nsx-system-restarter
+  - nodes-purge.sh
+- name: nodes-purge-env
+  namespace: nsx-system-purger
   envs:
-  - config/restart-nsx-node-agents.env
+  - config/nodes-purge.env
 generatorOptions:
   disableNameSuffixHash: true
   annotations:
@@ -21,4 +21,4 @@ patches:
     group: batch
     version: v1
     kind: CronJob
-    name: nsx-node-agent-restarter-cj
+    name: nodes-purge-cj

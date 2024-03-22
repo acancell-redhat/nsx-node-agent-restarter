@@ -1,5 +1,5 @@
 - Configurations
-  - script parameters: `config/restart-nsx-node-agents.env` 
+  - script parameters: `config/nodes-purge.env` 
   - cronjob parameters: `config/cronjob-parameters.yaml` 
 - To create and check demo environment
 ~~~
@@ -14,9 +14,9 @@ oc kustomize .
 ~~~
 oc apply -k .
 ~~~
-- To test the restarter cronjob
+- To test the purger cronjob
 ~~~
-oc create job --from=cronjob.batch/nsx-node-agent-restarter-cj nsx-node-agent-restarter-job-test -n nsx-system-restarter
-oc get pod -l job-name=nsx-node-agent-restarter-job-test -n nsx-system-restarter -w
-oc get pod -l job-name=nsx-node-agent-restarter-job-test -n nsx-system-restarter -o name | xargs -I {} oc logs {} -n nsx-system-restarter -f
+oc create job --from=cronjob.batch/nodes-purge-cj nodes-purge-job-test -n nsx-system-purger
+oc get pod -l job-name=nodes-purge-job-test -n nsx-system-purger -w
+oc get pod -l job-name=nodes-purge-job-test -n nsx-system-purger -o name | xargs -I {} oc logs {} -n nsx-system-purger -f
 ~~~
