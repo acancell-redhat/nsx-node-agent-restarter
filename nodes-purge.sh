@@ -63,7 +63,7 @@ for node in "${nodes_all[@]}"; do
   echo "INFO Next Node is: ${node}"
   echo "INFO Purging Node ${node} ..."
   # See: https://access.redhat.com/solutions/55818, https://access.redhat.com/solutions/4982351, https://www.tecmint.com/clear-ram-memory-cache-buffer-and-swap-space-on-linux/
-  oc debug node/${node} -- chroot /host bash -c "echo 'INFO Currently inside Node: ' ${HOSTNAME}; echo 'INFO Before drop_caches:'; cat /proc/slabinfo | grep -E 'active_objs|^dentry'; echo 'INFO Applying drop_caches ...'; echo 2 > /proc/sys/vm/drop_caches; echo 'INFO After drop_caches:'; cat /proc/slabinfo | grep -E 'active_objs|^dentry'; echo 'INFO Exiting Node: ' ${HOSTNAME}" 2> /dev/null
+  oc debug node/${node} -- chroot /host bash -c "echo 'INFO Currently inside Node: ' ${HOSTNAME}; echo 'INFO Before drop_caches:'; cat /proc/slabinfo | grep -E 'active_objs|^dentry'; echo 'INFO Applying drop_caches ...'; echo 2 > /proc/sys/vm/drop_caches; echo 'INFO After drop_caches:'; cat /proc/slabinfo | grep -E 'active_objs|^dentry'; echo 'INFO Exiting Node: ' ${HOSTNAME}"
 
   echo "INFO Waiting ${DELAY_READY_MINUTES} minutes (\"DELAY_READY_MINUTES\") before checking Node ${node} status"
   sleep $(( ${DELAY_READY_MINUTES} * 60 ))

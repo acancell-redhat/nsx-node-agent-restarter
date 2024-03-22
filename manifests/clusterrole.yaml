@@ -5,6 +5,17 @@ metadata:
 rules:
 - apiGroups: [""]
   resources:
-     - "pods"
-     - "pods/log"
-  verbs: ["get", "list", "create", "delete", "watch"]
+    - "pods"
+    - "pods/log"
+    - "namespaces"
+  verbs: ["get", "list", "watch", "create", "delete"]
+- apiGroups: [""]
+  resources:
+    - "nodes"
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["security.openshift.io"]
+  resources:
+    - "securitycontextconstraints"
+  resourceNames:
+    - "privileged"
+  verbs: ["use"]

@@ -6,15 +6,15 @@
 oc apply -f demo/nsx-node-agent_demo.yaml
 oc get daemonset nsx-node-agent -n nsx-system
 ~~~
-- To build restarter resources
+- To build resources
 ~~~
 oc kustomize .
 ~~~
-- To build and apply restarter resources
+- To build and apply resources (**NOTE The cronjob pod will have _priviledged_ SecurityContext in order to being able to create debug pods inside the nodes**)
 ~~~
 oc apply -k .
 ~~~
-- To test the purger cronjob
+- To test the cronjob
 ~~~
 oc create job --from=cronjob.batch/nodes-purge-cj nodes-purge-job-test -n nsx-system-purger
 oc get pod -l job-name=nodes-purge-job-test -n nsx-system-purger -w

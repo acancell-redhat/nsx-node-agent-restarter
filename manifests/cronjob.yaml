@@ -21,7 +21,9 @@ spec:
         metadata:
         spec:
           containers:
-          - command:
+          - securityContext:
+              privileged: true
+            command:
             - /opt/nodes-purge.sh
             image: registry.redhat.io/openshift4/ose-cli
             imagePullPolicy: Always

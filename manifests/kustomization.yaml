@@ -4,5 +4,5 @@ resources:
 - project.yaml
 - serviceaccount.yaml
 - clusterrole.yaml
-- rolebinding.yaml
+- clusterrolebinding.yaml
 - cronjob.yaml
